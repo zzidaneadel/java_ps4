@@ -31,7 +31,7 @@ class StreamWriterThread implements Runnable
     public void run() 
     {
         System.out.println(threadName + ": running thread");
-        //encode data by XOR and XOR again to decode                
+       
         String encoded = DataXORCode(data,code);
         String decoded = DataXORCode(DataXORCode(data,code),code);
         

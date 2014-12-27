@@ -19,19 +19,19 @@ public class Lab8_Concurrency
         FileInputStream datain = new FileInputStream(filedata);
         FileInputStream codein = new FileInputStream(filecode);
         
-        Semaphore s1= new Semaphore(0);
-        Semaphore s2= new Semaphore(0);
-        Semaphore s3= new Semaphore(0);
+        Semaphore sem1= new Semaphore(0);
+        Semaphore sem2= new Semaphore(0);
+        Semaphore sem3= new Semaphore(0);
         BlockingQueue bq = new ArrayBlockingQueue(2);
         
-        StreamReaderThread TSR1 = new StreamReaderThread("DATA", datain, s1, s2, s3, bq);
-        TSR1.start();
-        StreamReaderThread TSR2 = new StreamReaderThread("CODE", codein, s1, s2, s3, bq);
-        TSR2.start();
+        StreamReaderThread streamreadt1 = new StreamReaderThread("DATA", datain, sem1, sem2, sem3, bq);
+        streamreadt1.start();
+        StreamReaderThread streamreadt2 = new StreamReaderThread("CODE", codein, sem1, sem2, sem3, bq);
+        streamreadt2.start();
                 
         try
         {
-            s2.acquire(2);
+            sem2.acquire(2);
         }
         catch (InterruptedException ex) 
         {
@@ -40,20 +40,20 @@ public class Lab8_Concurrency
         
         int output_id = 0;
         
-        while ((TSR1.t.isAlive())||(TSR2.t.isAlive()))
+        while ((streamreadt1.t.isAlive())||(streamreadt2.t.isAlive()))
         {
             
-            while ((s1.getQueueLength()<2)&&(s3.getQueueLength()==0));
+            while ((sem1.getQueueLength()<2)&&(sem3.getQueueLength()==0));
             
             
-            if (s3.getQueueLength()!=0)
+            if (sem3.getQueueLength()!=0)
             {
                 break;
             }
             
             //synchronization
             System.out.println("MAIN: information can be input");
-            s1.release(2);
+            sem1.release(2);
             
             String a="";
             String b="";
@@ -67,16 +67,16 @@ public class Lab8_Concurrency
                 System.out.println("MAIN: " + ex.toString());
             }
             
-            while ((s2.getQueueLength()<2)&&(s3.getQueueLength()==0));
+            while ((sem2.getQueueLength()<2)&&(sem3.getQueueLength()==0));
             
-            if (s3.getQueueLength()!=0)
+            if (sem3.getQueueLength()!=0)
             {
                 break;
             }
             
             //synchronization
             System.out.println("MAIN: input is done");
-            s2.release(2);
+            sem2.release(2);
             
             
             output_id++;       
@@ -85,13 +85,13 @@ public class Lab8_Concurrency
         }
 
         
-        while (s3.getQueueLength()<2)
+        while (sem3.getQueueLength()<2)
         {
-            s1.release(s1.getQueueLength());
-            s2.release(s2.getQueueLength());
+            sem1.release(sem1.getQueueLength());
+            sem2.release(sem2.getQueueLength());
         }
         
-        s3.release(2);
+        sem3.release(2);
         
         datain.close();
         codein.close();

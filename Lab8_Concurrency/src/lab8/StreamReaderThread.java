@@ -15,13 +15,13 @@ class StreamReaderThread implements Runnable
     private final Semaphore semaphore3;
     private final BlockingQueue queue;
    
-    StreamReaderThread( String name, FileInputStream streamin, Semaphore s1, Semaphore s2, Semaphore s3, BlockingQueue bq)
+    StreamReaderThread( String name, FileInputStream streamin, Semaphore sem1, Semaphore sem2, Semaphore sem3, BlockingQueue bq)
     {
         this.threadName = name;
         this.threadInStream = streamin;
-        this.semaphore1 = s1;
-        this.semaphore2 = s2;
-        this.semaphore3 = s3;
+        this.semaphore1 = sem1;
+        this.semaphore2 = sem2;
+        this.semaphore3 = sem3;
         this.queue = bq;
         System.out.println(threadName + ": creating thread");
     }
